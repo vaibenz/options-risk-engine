@@ -2,6 +2,7 @@
 
     streamlit run app.py
 """
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -63,7 +64,7 @@ with tab_lim:
     def colour(row):
         c = {"BREACH": "background-color: #f8d7da", "WARN": "background-color: #fff3cd"}.get(row["status"], "")
         return [c] * len(row)
-    st.dataframe(lims.style.apply(colour, axis=1).format({"value": "{:,.0f}", "limit": "{:,.0f}"}),
+    st.dataframe(lims.style.apply(colour, axis=1).format({"value": "{:,.0f}", "limit": "{:,.0f}", "usage_pct": "{:.1f}%"}),
                  width="stretch")
 
 with tab_greeks:
@@ -108,5 +109,6 @@ with tab_bt:
     ax.plot(bt.index, -bt["var"], color="r", lw=1, label="-VaR")
     ex = bt[bt["exception"]]
     ax.scatter(ex.index, ex["pnl"], color="r", zorder=3, label="exception")
-    ax.legend(loc="lower left")
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v / 1000:,.0f}k"))
+    ax.legend(loc="upper left", ncol=3, fontsize=8)
     st.pyplot(fig)
