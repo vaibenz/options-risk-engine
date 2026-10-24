@@ -1,0 +1,13 @@
+{
+  "book": {
+    "var_99": 120000,
+    "es_99": 160000,
+    "stress_worst": 500000,
+    "vega": 80000
+  },
+  "underlying": {
+    "NKY": {"delta_1pct": 50000, "vega": 30000},
+    "HSI": {"delta_1pct": 40000, "vega": 20000},
+    "TWSE": {"delta_1pct": 60000, "vega": 40000}
+  }
+}
