@@ -71,8 +71,9 @@ def main(argv=None):
 
     out = Path(a.out)
     out.mkdir(exist_ok=True)
-    for k in ("by_underlying", "by_expiry", "grid", "named_stress", "var", "limits"):
+    for k in ("by_underlying", "by_expiry", "grid", "named_stress", "var"):
         rep[k].to_csv(out / f"{k}.csv")
+    rep["limits"].to_csv(out / "limits.csv", index=False)   # no pandas index, the excel report reads this
     breaches = (rep["limits"]["status"] == "BREACH").sum()
     return 1 if breaches else 0
 
