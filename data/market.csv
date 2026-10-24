@@ -1,0 +1,4 @@
+underlying,spot,rate,div_yield,ccy,usd_per_unit
+NKY,38500.0,0.002,0.018,JPY,0.0066
+HSI,17800.0,0.04,0.035,HKD,0.1286
+TWSE,22400.0,0.015,0.028,TWD,0.0312
