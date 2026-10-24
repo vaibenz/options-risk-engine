@@ -39,6 +39,6 @@ def check_limits(agg_greeks, book_metrics, limits, warn_at=0.8):
         for metric, limit in lims.items():
             rows.append(_row(und, metric, float(agg_greeks.loc[und, metric]), limit, warn_at))
 
-    out = pd.DataFrame(rows)
+    out = pd.DataFrame(rows, columns=["scope", "metric", "value", "limit", "usage_pct", "status"])
     order = {"BREACH": 0, "WARN": 1, "ok": 2}
     return out.sort_values("status", key=lambda s: s.map(order), kind="stable").reset_index(drop=True)
