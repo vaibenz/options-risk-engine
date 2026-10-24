@@ -65,3 +65,7 @@ The grid shows the book is long vol overall but loses in the low vol / spot down
 * rates and dividends are flat per underlying
 
 Next I'd like to add sticky strike vs sticky delta vol dynamics and a proper vol surface per underlying (see my vol-surface-svi repo).
+
+---
+
+If something here is unclear, broken, or just wrong, feel free to open an issue. I'm always happy to chat about it.
