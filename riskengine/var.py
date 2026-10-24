@@ -32,7 +32,7 @@ def reval_pnl(book, market, spot_rets, vol_moves=None):
     rets = spot_rets.to_numpy()[:, idx]                       # n x positions
     S = S0 * (1 + rets)
 
-    vol0 = book["vol"].fillna(0.0).to_numpy(dtype=float)
+    vol0 = np.maximum(book["vol"].fillna(0.0).to_numpy(dtype=float), 0.01)
     dv = 0.0 if vol_moves is None else vol_moves[cols].to_numpy()[:, idx]
     vol = np.maximum(vol0 + dv, 0.01)
 
