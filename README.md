@@ -4,6 +4,8 @@ A small market risk engine for an options market making book. I built it to unde
 
 The sample book is synthetic: 27 lines of index options and futures hedges on NKY, HSI and TWSE across four expiries, with a skew baked into the vols. Market history is also synthetic (GARCH(1,1) with correlated student t shocks, see `data/make_history.py`) so I could commit it without vendor data.
 
+![dashboard, limits tab](docs/dashboard_limits.png)
+
 ## What it does
 
 **Pricing and greeks** (`riskengine/pricing.py`)
@@ -15,6 +17,8 @@ Position greeks scaled by qty, multiplier and FX so everything sums in USD. Roll
 **Stress** (`riskengine/scenarios.py`)
 Full revaluation spot x vol grid (spot -15% to +15%, vol -10 to +20 points) plus a few named scenarios loosely shaped on real moves (Mar 2020, the Aug 2024 yen carry unwind, the Sep 2024 China stimulus rally, a vol crush).
 
+![spot x vol stress grid](docs/dashboard_stress.png)
+
 **VaR and ES** (`riskengine/var.py`)
 * historical simulation, full reval of the book under each of the last 500 days of spot and vol moves
 * Monte Carlo with an EWMA covariance (lambda 0.94) over spot and vol jointly, normal or student t shocks
@@ -22,6 +26,8 @@ Full revaluation spot x vol grid (spot -15% to +15%, vol -10 to +20 points) plus
 
 **Backtesting** (`riskengine/backtest.py`)
 Rolling 250 day backtest of 1 day 99% historical VaR against hypothetical P&L, with the Kupiec proportion of failures test, the Christoffersen independence test (are exceptions clustering?) and the Basel traffic light zone.
+
+![var backtest, 3 exceptions in 250 days](docs/backtest.png)
 
 **Limits** (`riskengine/limits.py`)
 Book and per underlying limits from `data/limits.json`, warn at 80% usage, breach above 100%.
