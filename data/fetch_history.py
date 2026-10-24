@@ -47,12 +47,24 @@ def build_history(closes, lam=0.94, warmup=21):
     return rets.round(6), dvol.round(6)
 
 
+def check_closes(closes):
+    """Fail loudly if any market came back empty, before anything is written.
+    Without this a failed ticker silently leaves zero common days and the
+    script writes header only csvs."""
+    empty = [c for c in closes.columns if closes[c].dropna().empty]
+    if empty:
+        raise SystemExit(f"no data for {', '.join(empty)}, nothing written. Try again in a minute.")
+    if closes.dropna(how="any").empty:
+        raise SystemExit("no days where all markets traded, nothing written.")
+
+
 def download(years):
     import yfinance as yf
 
     end = pd.Timestamp.today().normalize()
     start = end - pd.DateOffset(years=years)
-    raw = yf.download(list(TICKERS.values()), start=start, end=end, auto_adjust=False, progress=False)
+    raw = yf.download(list(TICKERS.values()), start=start, end=end, auto_adjust=False, progress=False,
+                      threads=False)  # threaded downloads lock yfinance's sqlite cache on windows
     closes = raw["Close"].rename(columns={v: k for k, v in TICKERS.items()})
     return closes[list(TICKERS)]
 
@@ -63,6 +75,7 @@ def main(argv=None):
     a = p.parse_args(argv)
 
     closes = download(a.years)
+    check_closes(closes)
     rets, dvol = build_history(closes)
     rets.rename_axis("date").to_csv(HERE / "returns_real.csv")
     dvol.rename_axis("date").to_csv(HERE / "vol_changes_real.csv")

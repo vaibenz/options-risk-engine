@@ -43,6 +43,7 @@ A lot of risk reporting still ends up in Excel, so there is a VBA side too. `Bla
 pip install -r requirements.txt
 python -m pytest
 python -m riskengine.report          # prints the morning report, writes csvs to out/
+python data/fetch_history.py         # optional: real index history, needs yfinance
 streamlit run app.py                 # dashboard
 python excel/tests/test_vba.py       # vba checks, needs LibreOffice
 ```
@@ -68,6 +69,35 @@ limits
 ```
 
 The grid shows the book is long vol overall but loses in the low vol / spot down corner, which is the stress limit breach.
+
+## On real history
+
+`data/fetch_history.py` pulls three years of real Nikkei 225, Hang Seng and TAIEX closes from Yahoo and writes them in the same format as the synthetic files. Vol moves are proxied by the change in 21 day EWMA realised vol, since I couldn't find free implied vol history for all three that lines up (more on that in the script's docstring).
+
+```
+python data/fetch_history.py
+python -m riskengine.report --returns data/returns_real.csv --vols data/vol_changes_real.csv
+```
+
+That gave 633 common trading days (Nov 2023 to Oct 2026), and the same book looks a lot worse:
+
+```
+VaR / ES (1 day)
+          historical  monte_carlo_t5
+VaR 99%     183,363         267,956
+ES 99%      227,136         349,457
+
+backtest (last 250d) {'days': 250, 'exceptions': 6, 'expected': 2.5, 'kupiec_lr': 3.555, 'kupiec_p': 0.059, 'independence_p': 0.12, 'basel_zone': 'yellow'}
+```
+
+What I take from it:
+
+* Historical VaR goes from 101k to 183k, so the book is now over its 120k VaR limit and its ES limit, not just warning. The synthetic GARCH data was simply calmer than the real markets.
+* The backtest is the more interesting part. 6 exceptions against 2.5 expected puts the model in the Basel yellow zone. Kupiec only just fails to reject at 5% (p = 0.059), so I wouldn't call the model broken, but I wouldn't call it fine either. The independence test (p = 0.12) doesn't show the exceptions clustering.
+* On synthetic data Monte Carlo came in below historical. On real data it comes in well above. The EWMA covariance weights recent days heavily, so my reading is that recent vol has been higher than the three year average that historical simulation spreads its weight over.
+* Real spot/vol correlation is weaker than the synthetic generator assumed (between -0.11 and -0.29 against -0.35), but the vol proxy is realised vol, so I'd be careful reading much into that.
+
+The synthetic files are still the default so the repo runs without a network connection.
 
 ## Things I simplified
 
