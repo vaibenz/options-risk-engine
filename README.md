@@ -35,7 +35,7 @@ Book and per underlying limits from `data/limits.json`, warn at 80% usage, breac
 **Excel / VBA** (`excel/`)
 A lot of risk reporting still ends up in Excel, so there is a VBA side too. `BlackScholes.bas` adds Black-Scholes worksheet functions (`=BS_DELTA(...)` etc.) and `MorningReport.bas` has two macros: one turns the Python output into a one page report with breaches highlighted and the stress grid as a heat map, the other loads the book with live greek formulas for quick what-ifs. Both are tested against the Python engine (see `excel/README.md`).
 
-![excel morning report](docs/excel_report.png)
+![excel morning report, on real index history](docs/excel_report.png)
 
 ## Running it
 
